@@ -101,10 +101,10 @@ def main():
             for df_index in range(len(corp_dfs) - 1):
                 if df_index == 0:
                     merged_dfs = merge_2dfs(corp_dfs[0], corp_dfs[1])
-                    print(f'Shape after merging 1 DataFrame: {merged_dfs.shape}')
+                    print(f'Shape after merging {df_index+2} DataFrames: {merged_dfs.shape}')
                 else:
                     merged_dfs = merge_2dfs(merged_dfs, corp_dfs[df_index + 1])
-                    print(f'Shape after merging {df_index+1} DataFrames: {merged_dfs.shape}')
+                    print(f'Shape after merging {df_index+2} DataFrames: {merged_dfs.shape}')
 
             print('Merged DataFrame:')
             print(merged_dfs)
