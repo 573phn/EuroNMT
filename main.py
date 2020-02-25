@@ -28,8 +28,8 @@ def clean(lang):
             combo = set(tuple(zip(foreign_new, english_new)))
             return combo
     except FileNotFoundError as fnf:
-        print(f'Error: One or more corpus files for {lang}-en not found:\n'
-              f'{fnf}')
+        print(f"Error: One or more corpus files for '{lang}-en' not found:\n"
+              f"{fnf}")
         sys.exit(1)
 
 
@@ -95,25 +95,28 @@ def main():
             for dict_lang in corp_dict.keys():
                 df = make_dataframe(corp_dict[dict_lang], dict_lang)
                 corp_dfs.append(df)
-                print(f'Shape of {dict_lang} DataFrame: {df.shape}')
+                print(f"Shape of '{dict_lang}-en' DataFrame: {df.shape}")
 
             merged_dfs = None
             for df_index in range(len(corp_dfs) - 1):
                 if df_index == 0:
                     merged_dfs = merge_2dfs(corp_dfs[0], corp_dfs[1])
-                    print(f'Shape after merging {df_index+2} DataFrames: {merged_dfs.shape}')
+                    print(f'Shape after merging {df_index+2} DataFrames: '
+                          f'{merged_dfs.shape}')
                 else:
                     merged_dfs = merge_2dfs(merged_dfs, corp_dfs[df_index + 1])
-                    print(f'Shape after merging {df_index+2} DataFrames: {merged_dfs.shape}')
+                    print(f'Shape after merging {df_index+2} DataFrames: '
+                          f'{merged_dfs.shape}')
 
             print('Merged DataFrame:')
             print(merged_dfs)
             print('--------')
             duplicates_check = merged_dfs[merged_dfs.duplicated(['en'])]
             if duplicates_check.empty:
-                print('No duplicates found in \'en\' column')
+                print("No duplicates found in 'en' column")
             else:
-                print('DataFrame contains following duplicates in \'en\' column:\n{duplicates_check}')
+                print(f"DataFrame contains following duplicates in 'en' column"
+                      f":\n{duplicates_check}")
                 print('DataFrame after removing duplicates:')
                 print(merged_dfs.drop_duplicates(subset='en'))
 
