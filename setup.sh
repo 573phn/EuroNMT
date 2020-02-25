@@ -30,3 +30,7 @@ pip install spacy==2.2.3 spacy-stanfordnlp==0.1.3 pandas==1.0.1 spacy_conll==1.2
 
 # Download pretrained statistical model for English
 python3 -m spacy download en_core_web_lg-2.2.5
+
+# https://stanfordnlp.github.io/stanfordnlp/models.html#human-languages-supported-by-stanfordnlp
+# https://stanfordnlp.github.io/stanfordnlp/performance.html#system-performance-in-conll-2018-shared-task
+python3 -c "import stanfordnlp; stanfordnlp.download('en_ewt', force=True, resource_dir='${DATADIR}')"
