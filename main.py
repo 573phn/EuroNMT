@@ -4,9 +4,11 @@ import pandas as pd
 
 
 def clean(lang):
-    """ Takes as input ISO 2 letter language code, opens Europarl corpus
-        files and returns set with tuples containing sentence in English
-        and foreign language. """
+    """
+    Takes as input ISO 2 letter language code, opens Europarl corpus files and
+    returns set with tuples containing sentence in English and foreign
+    language.
+    """
     try:
         # Open Europarl files
         with open(f'{lang}-en/europarl-v7.{lang}-en.{lang}') as foreign, \
@@ -27,55 +29,54 @@ def clean(lang):
             # Place English and foreign sentence in tuple and remove duplicates
             combo = set(tuple(zip(foreign_new, english_new)))
             return combo
+
     except FileNotFoundError as fnf:
         print(f"Error: One or more corpus files for '{lang}-en' not found:\n"
               f"{fnf}")
         sys.exit(1)
 
 
-def compare(l1_set, l2_set, l1_name, l2_name):
-    """ Takes as input two sets with tuples and two 639-1 language codes and
-        returns pandas dataframe that only contains English sentences which
-        are present in both foreign corpora. """
-    # Convert each language to dataframe
-    df1 = pd.DataFrame(l1_set, columns=[l1_name, 'en'])
-    df2 = pd.DataFrame(l2_set, columns=[l2_name, 'en'])
-
-    # Merge dataframes on column 'en'
-    merged = df1.merge(df2, left_on='en', right_on='en',
-                       how='outer', suffixes=('_lang1', '_lang2'))
-
-    # Remove rows with NAs from merged dataframe and reset index
-    in_both = merged.dropna().reset_index(drop=True)
-    return in_both
-
-
 def make_dataframe(lang_set, lang_name):
-    """ Takes as input a set with tuples and turns it into a pandas DataFrame.
-        """
+    """
+    Takes as input a set with tuples and turns it into a pandas DataFrame.
+    """
     return pd.DataFrame(lang_set, columns=[lang_name, 'en'])
 
 
 def merge_2dfs(df1, df2):
-    """ Takes as input two pandas DataFrames and performs an inner merge on the
-        'en' column. """
+    """
+    Takes as input two pandas DataFrames and performs an inner merge on the
+    'en' column.
+    """
     df1 = df1.drop_duplicates(subset='en')
     df2 = df2.drop_duplicates(subset='en')
     return pd.merge(df1, df2, on='en', validate='one_to_one')
 
 
-def write_new_files(l1_set, l2_set, l1_name, l2_name):
-    with open(f'{l1_name}-en/europarl-v7.{l1_name}-en.{l1_name}.new', 'w') as l1_fnew, \
-         open(f'{l1_name}-en/europarl-v7.{l1_name}-en.en.new', 'w') as l1_enew:
-        for foreign, english in l1_set:
-            l1_fnew.write(foreign)
-            l1_enew.write(english)
+def save_to_file(df, output='lang'):
+    """
+    Takes a pandas DataFrame as input and writes its columns to one or multiple
+    files. Output options are:
 
-    with open(f'{l2_name}-en/europarl-v7.{l2_name}-en.{l2_name}.new', 'w') as l2_fnew, \
-         open(f'{l2_name}-en/europarl-v7.{l2_name}-en.en.new', 'w') as l2_enew:
-        for foreign, english in l2_set:
-            l2_fnew.write(foreign)
-            l2_enew.write(english)
+    'lang': Creates a file for each language with the sentences of that
+            language.
+    'tsv':  Creates a file for each foreign language which contains the
+            sentences of that language as well as the English translation,
+            separated by a tab.
+    """
+    if output == 'lang':
+        for col in df.columns:
+            with open(f'new/euronmt-{col}.txt', 'w') as out_file:
+                out_file.write(df[col].to_csv(header=False, index=False))
+    elif output == 'tsv':
+        for col in [col for col in df.columns if col != 'en']:
+            with open(f'new/en-{col}.tsv', 'w') as out_file:
+                english_col = df['en'].to_csv(header=False, index=False)
+                foreign_col = df[col].to_csv(header=False, index=False)
+                out_file.write(f'{english_col}\t{foreign_col}')
+    else:
+        raise ValueError(f"Output argument must be 'lang' or 'tsv', not "
+                         f"'{output}'.")
 
 
 def main():
@@ -120,17 +121,9 @@ def main():
                 print('DataFrame after removing duplicates:')
                 print(merged_dfs.drop_duplicates(subset='en'))
 
-            """
-            pd.set_option('display.max_colwidth', -1)
-            for num in range(3):
-                for lang in ('en', 'nl', 'de', 'fr'):
-                    print(merged_dfs.loc[[num], [lang]])
-                print()
-            """
+            # Save output to file(s), output argument should be 'lang' or 'tsv'
+            save_to_file(df=merged_dfs, output='lang')
 
-            # Start debugger
-            # import pdb
-            # pdb.set_trace()
         else:
             print(f'Incorrect argument(s) used, valid arguments are '
                   f'{list(corp_langs)}. You used: {argv[1:]}')
