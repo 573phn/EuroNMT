@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=EuroNMT
 #SBATCH --output=slurm/EuroNMT-%j.log
-#SBATCH --time=1-00:00:00
-#SBATCH --mem=32GB
+#SBATCH --time=30:00
+#SBATCH --mem=64GB
 #SBATCH --partition=regular
 
 # Print arguments
@@ -18,4 +18,5 @@ module load Python/3.7.4-GCCcore-8.3.0
 source "${DATADIR}"/env/bin/activate
 
 # Prepare data
-python3 1_prepare_for_ravfogel.py fr nl
+# python3 -m trace --trace 1_prepare_for_ravfogel.py fr nl
+python3 baseline.py

@@ -37,10 +37,11 @@ pip install spacy==2.2.3 pandas==1.0.1 spacy_conll==1.2.0 spacy-stanza==0.2.1
 
 # Download pretrained statistical model for English
 python3 -m spacy download en_core_web_lg
+python3 -m spacy download en_core_web_sm
 python3 -m spacy download fr_core_news_md
+python3 -m spacy download fr_core_news_sm
 python3 -m spacy download nl_core_news_sm
 
 # https://stanfordnlp.github.io/stanfordnlp/models.html#human-languages-supported-by-stanfordnlp
 # https://stanfordnlp.github.io/stanfordnlp/performance.html#system-performance-in-conll-2018-shared-task
-python3 -c "import stanza; stanza.download('en', package='ewt')"
-#python3 -c "import nltk; nltk.download('punkt')"
+python3 -c "import stanza; stanza.download('en', processors={'ner': 'ontonotes'}, package='ewt')"
