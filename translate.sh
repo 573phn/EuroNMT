@@ -30,18 +30,15 @@ source "${DATADIR}"/env/bin/activate
 # Make environment variable to use GPUs
 export CUDA_VISIBLE_DEVICES=0
 
-if [[ "$1" =~ ^(fr|nl)$ ]] && [[ "$2" == "rnn" ]]; then
-    onmt_translate -model "${DATADIR}"/data/en-"${1}"/trained_model_"${2}"_step_100000.pt \
-                   -src "${HOMEDIR}"/data/en-"${1}"/src_test.txt \
-                   -output "${DATADIR}"/data/en-"${1}"/out_test_"${2}".txt \
-                   -gpu 0
+if [[ "$1" =~ ^(fr|nl)$ ]] && [[ "$2" =~ ^(rnn|transformer)$ ]]; then
+  onmt_translate -model "${DATADIR}"/data/en-"${1}"/trained_model_"${2}"_step_100000.pt \
+                 -src "${DATADIR}"/data/en-"${1}"/src_test.bpe \
+                 -output "${DATADIR}"/data/en-"${1}"/out_test_"${2}".bpe \
+                 -gpu 0
 
-elif [[ "$1" =~ ^(fr|nl)$ ]] && [[ "$2" == "transformer" ]]; then
-    onmt_translate -model "${DATADIR}"/data/en-"${1}"/trained_model_"${2}"_step_100000.pt \
-                   -src "${HOMEDIR}"/data/en-"${1}"/src_test.txt \
-                   -output "${DATADIR}"/data/en-"${1}"/out_test_"${2}".txt \
-                   -gpu 0
-
+  cat "${DATADIR}"/data/en-"${1}"/out_test_"${2}".bpe | sed -E 's/(@@ )|(@@ ?$)//g' > "${DATADIR}"/data/en-"${1}"/out_test_"${2}".txt
+  ./data/multi-bleu.perl "${HOMEDIR}"/data/en-"${1}"/src_test.txt < "${DATADIR}"/data/en-"${1}"/out_test_"${2}".txt > "${DATADIR}"/data/en-"${1}"/test_"${2}".bleu
+   
 else
   echo "${ERROR}"
   exit
