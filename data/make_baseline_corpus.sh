@@ -2,7 +2,7 @@
 #SBATCH --job-name=EuroNMT
 #SBATCH --output=slurm/EuroNMT-%j.log
 #SBATCH --time=30:00
-#SBATCH --mem=64GB
+#SBATCH --mem=8GB
 #SBATCH --partition=regular
 
 # Print arguments
@@ -19,4 +19,4 @@ source "${DATADIR}"/env/bin/activate
 
 # Prepare data
 # python3 -m trace --trace 1_prepare_for_ravfogel.py fr nl
-python3 baseline.py
+python3 make_baseline_corpus.py

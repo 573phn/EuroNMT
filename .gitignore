@@ -1,5 +1,4 @@
 slurm/
-*.tgz
-*-en/
+data/*-en/
+data/en-*/
 .idea/
-en_ewt_models/

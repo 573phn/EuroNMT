@@ -2,10 +2,8 @@
 import sys
 import pandas as pd
 import spacy
-import pickle
-
+from getpass import getuser
 from random import shuffle, seed
-from sys import argv
 import numpy as np
 
 
@@ -17,8 +15,8 @@ def clean(lang):
     """
     try:
         # Open Europarl files
-        with open(f'{lang}-en/europarl-v7.{lang}-en.{lang}') as foreign, \
-                open(f'{lang}-en/europarl-v7.{lang}-en.en') as english:
+        with open(f'/data/{getuser()}/EuroNMT/data/{lang}-en/europarl-v7.{lang}-en.{lang}') as foreign, \
+             open(f'/data/{getuser()}/EuroNMT/data/{lang}-en/europarl-v7.{lang}-en.en') as english:
 
             # Prepare empty lists to fill with corpus sentences
             foreign_new = []
@@ -128,7 +126,7 @@ sp_fr = spacy.load('fr_core_news_sm')
 # sp_nl = spacy.load('nl_core_news_sm')
 
 # for lang in merged_dfs.columns:
-for lang in {'en', 'fr'}:
+for lang in {'en', 'fr'}: # Limiting to 'fr' only for testing purposes
     print(f"Tokenizing and lowercasing '{lang}' DataFrame column")
     merged_dfs[lang] = [tokenize_lowercase(sent, lang) for sent in
                         merged_dfs[lang]]
@@ -136,7 +134,7 @@ for lang in {'en', 'fr'}:
 print('Tokenized and lowercased DataFrame:')
 print(merged_dfs)
 
-# Set langs to only one language
+# Set langs to only one language for testing purposes
 langs = {'fr'}
 
 print('--------')
@@ -152,20 +150,20 @@ for lang in langs:
     split_2 = -5000
 
     print(f'Total lines in corpus: {len(corpus_df)}')
-    with open(f'en-{lang}/src_train.txt', 'w') as src_train, \
-         open(f'en-{lang}/tgt_train.txt', 'w') as tgt_train:
+    with open(f'/home/{getuser()}/EuroNMT/data/en-{lang}/src_train.txt', 'w') as src_train, \
+         open(f'/home/{getuser()}/EuroNMT/data/en-{lang}/tgt_train.txt', 'w') as tgt_train:
         print(f"Creating training files ({len(corpus_df['en'].iloc[:split_1])} lines)")
         src_train.write(corpus_df['en'].iloc[:split_1].str.cat(sep='\n'))
         tgt_train.write(corpus_df[lang].iloc[:split_1].str.cat(sep='\n'))
 
-    with open(f'en-{lang}/src_val.txt', 'w') as src_val, \
-         open(f'en-{lang}/tgt_val.txt', 'w') as tgt_val:
+    with open(f'/home/{getuser()}/EuroNMT/data/en-{lang}/src_val.txt', 'w') as src_val, \
+         open(f'/home/{getuser()}/EuroNMT/data/en-{lang}/tgt_val.txt', 'w') as tgt_val:
         print(f"Creating validation files ({len(corpus_df['en'].iloc[split_1:split_2])} lines)")
         src_val.write(corpus_df['en'].iloc[split_1:split_2].str.cat(sep='\n'))
         tgt_val.write(corpus_df[lang].iloc[split_1:split_2].str.cat(sep='\n'))
         
-    with open(f'en-{lang}/src_test.txt', 'w') as src_test, \
-         open(f'en-{lang}/tgt_test.txt', 'w') as tgt_test:
+    with open(f'/home/{getuser()}/EuroNMT/data/en-{lang}/src_test.txt', 'w') as src_test, \
+         open(f'/home/{getuser()}/EuroNMT/data/en-{lang}/tgt_test.txt', 'w') as tgt_test:
         print(f"Creating test files ({len(corpus_df['en'].iloc[split_2:])} lines)")
         src_test.write(corpus_df['en'].iloc[split_2:].str.cat(sep='\n'))
         tgt_test.write(corpus_df[lang].iloc[split_2:].str.cat(sep='\n'))
