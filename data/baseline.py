@@ -2,6 +2,7 @@
 import sys
 import pandas as pd
 import spacy
+import pickle
 
 from random import shuffle, seed
 from sys import argv
@@ -140,66 +141,33 @@ langs = {'fr'}
 
 print('--------')
 for lang in langs:
-    corpus_df = merged_dfs.filter(['en', lang], axis=1)
-    print(f"Creating 'en-{lang}/par_corp.txt'")
-    corpus_df.to_csv(f'en-{lang}/par_corp.txt', header=False, index=False,
-                     sep='\t', mode='a')
-
-print('--------')
-seed(25)
-for lang in langs:
     print(f"Creating OpenNMT files for 'en-{lang}' corpus")
-    with open(f'en-{lang}/par_corp.txt', 'r') as f:
-        par_corp = f.readlines()
+    # Get 'en' column plus 1 foreign language column
+    corpus_df = merged_dfs.filter(['en', lang], axis=1)
+    # Randomize order of rows
+    corpus_df = corpus_df.sample(frac=1, random_state=1).reset_index(drop=True)
+    
+    # Split n/5k/5k
+    split_1 = -10000
+    split_2 = -5000
 
-    par_corp.sort()
-    shuffle(par_corp)
+    print(f'Total lines in corpus: {len(corpus_df)}')
+    with open(f'en-{lang}/src_train.txt', 'w') as src_train, \
+         open(f'en-{lang}/tgt_train.txt', 'w') as tgt_train:
+        print(f"Creating training files ({len(corpus_df['en'].iloc[:split_1])} lines)")
+        src_train.write(corpus_df['en'].iloc[:split_1].str.cat(sep='\n'))
+        tgt_train.write(corpus_df[lang].iloc[:split_1].str.cat(sep='\n'))
 
-    split_1 = int(0.8 * len(par_corp))
-    split_2 = int(0.9 * len(par_corp))
-
-    train = []
-    for line in par_corp[:split_1]:
-        train.append(tuple(line.strip().split('\t')))
-    val = []
-    for line in par_corp[split_1:split_2]:
-        val.append(tuple(line.strip().split('\t')))
-    test = []
-    for line in par_corp[split_2:]:
-        test.append(tuple(line.strip().split('\t')))
+    with open(f'en-{lang}/src_val.txt', 'w') as src_val, \
+         open(f'en-{lang}/tgt_val.txt', 'w') as tgt_val:
+        print(f"Creating validation files ({len(corpus_df['en'].iloc[split_1:split_2])} lines)")
+        src_val.write(corpus_df['en'].iloc[split_1:split_2].str.cat(sep='\n'))
+        tgt_val.write(corpus_df[lang].iloc[split_1:split_2].str.cat(sep='\n'))
+        
+    with open(f'en-{lang}/src_test.txt', 'w') as src_test, \
+         open(f'en-{lang}/tgt_test.txt', 'w') as tgt_test:
+        print(f"Creating test files ({len(corpus_df['en'].iloc[split_2:])} lines)")
+        src_test.write(corpus_df['en'].iloc[split_2:].str.cat(sep='\n'))
+        tgt_test.write(corpus_df[lang].iloc[split_2:].str.cat(sep='\n'))
 
     print('--------')
-    print(f'Total lines in corpus: {len(par_corp)}')
-    print(f'Training lines: {len(train)}')
-    print(f'Validation lines: {len(val)}')
-    print(f'Test lines: {len(test)}')
-    print(f'Sum of training, validation and test: {len(train)+len(val)+len(test)} (should be equal to total lines in corpus)')
-    print('--------')
-
-    src_train, tgt_train = np.array(train).T
-    src_val, tgt_val = np.array(val).T
-    src_test, tgt_test = np.array(test).T
-
-    with open(f'en-{lang}/src_train.txt', 'w') as f:
-        for line in src_train:
-            f.write(f'{line}\n')
-
-    with open(f'en-{lang}/tgt_train.txt', 'w') as f:
-        for line in tgt_train:
-            f.write(f'{line}\n')
-
-    with open(f'en-{lang}/src_val.txt', 'w') as f:
-        for line in src_val:
-            f.write(f'{line}\n')
-
-    with open(f'en-{lang}/tgt_val.txt', 'w') as f:
-        for line in tgt_val:
-            f.write(f'{line}\n')
-
-    with open(f'en-{lang}/src_test.txt', 'w') as f:
-        for line in src_test:
-            f.write(f'{line}\n')
-
-    with open(f'en-{lang}/tgt_test.txt', 'w') as f:
-        for line in tgt_test:
-            f.write(f'{line}\n')
