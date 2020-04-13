@@ -5,8 +5,6 @@
 #SBATCH --mem=1MB
 #SBATCH --partition=short
 #SBATCH --dependency=singleton
-#SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=g.j.s.sportel@rug.nl
 
 # Print arguments
 echo "${@}"
