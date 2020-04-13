@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=EuroNMT
 #SBATCH --output=slurm/translate-job-%j.log
-#SBATCH --time=24:00:00
-#SBATCH --mem=64GB
+#SBATCH --time=00:05:00
+#SBATCH --mem=4GB
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:v100:1
 #SBATCH --mail-type=END,FAIL
@@ -34,13 +34,19 @@ if [[ "$1" =~ ^(fr|nl)$ ]] && [[ "$2" =~ ^(rnn|transformer)$ ]]; then
   # Get highest step number
   HIGHESTSTEP=$(ls -f "${DATADIR}"/data/en-"${1}"/trained_model_"${2}"_step_*.pt | cut -d_ -f5 | sort -n | tail -1)
 
-  onmt_translate -model "${DATADIR}"/data/en-"${1}"/trained_model_"${2}"_step_"${HIGHESTSTEP}".pt \
+  onmt_translate -model "${DATADIR}"/data/en-"${1}"/trained_model_"${2}"_step_"${HIGHESTSTEP}" \
                  -src "${DATADIR}"/data/en-"${1}"/src_test.bpe \
                  -output "${DATADIR}"/data/en-"${1}"/out_test_"${2}".bpe \
                  -gpu 0
 
   cat "${DATADIR}"/data/en-"${1}"/out_test_"${2}".bpe | sed -E 's/(@@ )|(@@ ?$)//g' > "${DATADIR}"/data/en-"${1}"/out_test_"${2}".txt
-  ./data/tools/multi-bleu-detok.perl "${HOMEDIR}"/data/en-"${1}"/src_test.txt < "${DATADIR}"/data/en-"${1}"/out_test_"${2}".txt > "${DATADIR}"/data/en-"${1}"/test_"${2}".bleu
+  
+  "${HOMEDIR}"/data/tools/multi-bleu-detok.perl "${HOMEDIR}"/data/en-"${1}"/src_test.txt < "${DATADIR}"/data/en-"${1}"/out_test_"${2}".txt > "${DATADIR}"/data/en-"${1}"/test_"${2}"_detok.bleu
+  echo "multi-bleu-detok:"
+  cat "${DATADIR}"/data/en-"${1}"/test_"${2}"_detok.bleu
+  
+  "${HOMEDIR}"/data/tools/multi-bleu.perl "${HOMEDIR}"/data/en-"${1}"/src_test.txt < "${DATADIR}"/data/en-"${1}"/out_test_"${2}".txt > "${DATADIR}"/data/en-"${1}"/test_"${2}".bleu
+  echo "multi-bleu:"
   cat "${DATADIR}"/data/en-"${1}"/test_"${2}".bleu
    
 else
