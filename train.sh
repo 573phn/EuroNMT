@@ -8,6 +8,10 @@
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=g.j.s.sportel@rug.nl
 
+# To resume training from unfinished job, add following to model config and
+# adjust step number:
+# -train_from "${DATADIR}"/data/en-"${1}"/trained_model_"${2}"_step_600000.pt
+
 # Print arguments
 echo "${@}"
 
@@ -44,7 +48,8 @@ if [[ "$1" =~ ^(fr|nl)$ ]] && [[ "$2" == "rnn" ]]; then
              -rnn_size 512 \
              -batch_size 128 \
              -early_stopping 5 \
-             -train_steps 2000000
+             -train_steps 2000000 \
+             -keep_checkpoint 5
 
 elif [[ "$1" =~ ^(fr|nl)$ ]] && [[ "$2" == "transformer" ]]; then
   onmt_train -data "${DATADIR}"/data/en-"${1}"/ppd \
@@ -72,11 +77,12 @@ elif [[ "$1" =~ ^(fr|nl)$ ]] && [[ "$2" == "transformer" ]]; then
              -param_init 0 \
              -param_init_glorot \
              -label_smoothing 0.1 \
-             -save_checkpoint_steps 100000 \
+             -save_checkpoint_steps 50000 \
              -world_size 1 \
              -gpu_ranks 0 \
              -early_stopping 5 \
-             -train_steps 2000000
+             -train_steps 2000000 \
+             -keep_checkpoint 5
 
 else
   echo "${ERROR}"
