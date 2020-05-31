@@ -1,4 +1,4 @@
 slurm/
-data/*-en/
-data/en-*/
+data/en*/
+data/spacy_conll_stanza/
 .idea/

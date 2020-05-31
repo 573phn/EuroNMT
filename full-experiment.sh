@@ -8,11 +8,12 @@
 # Print arguments
 echo "${@}"
 
-# for LANGSET in en-fr-baseline en-fr-vos en-fr-vso; do
-  # Preprocess corpora
-  # sbatch preprocess.sh "${LANGSET}"
-# done
-sbatch preprocess.sh fr
+# Set variables
+WOS='en en_vso en_sov en_vos en_random en_vso60rest8 en_vso30rest14 en_vos60rest8 en_vos30rest14'
+
+for WO in ${WOS}; do
+  sbatch preprocess.sh fr "${WO}"
+done
 
 # Wait until all preprocess jobs are done, then start train jobs
 sbatch delay.sh train

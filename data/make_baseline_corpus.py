@@ -54,14 +54,16 @@ def merge_2dfs(df1, df2):
     """
     df1 = df1.drop_duplicates(subset='en')
     df2 = df2.drop_duplicates(subset='en')
+    import pdb; pdb.set_trace()
     return pd.merge(df1, df2, on='en', validate='one_to_one')
 
 
 def tokenize_lowercase(tl_sent, tl_lang):
     if tl_lang == 'en':
+        # If language is English, don't lowercase because Ravfogel will do it
         return " ".join([w.text for w in sp_en(tl_sent,
                                                disable=['tagger', 'parser',
-                                                        'ner'])]).lower()
+                                                        'ner'])])
     if tl_lang == 'fr':
         return " ".join([w.text for w in sp_fr(tl_sent,
                                                disable=['tagger', 'parser',
@@ -70,7 +72,6 @@ def tokenize_lowercase(tl_sent, tl_lang):
         return " ".join([w.text for w in sp_nl(tl_sent,
                                                disable=['tagger', 'parser',
                                                         'ner'])]).lower()
-
 
 langs = {'fr', 'nl'}
 corp_dict = dict()
@@ -104,68 +105,44 @@ print(merged_dfs)
 
 print('--------')
 print('Sorting DataFrames to make sure the rows are always in the same order')
+
 # Reorder DataFrame columns
 merged_dfs.sort_index(axis=1, inplace=True)
+
 # Sort DataFrame
 merged_dfs.sort_values(
     by=sorted(['en'] + [col for col in merged_dfs.columns if col != 'en']),
     inplace=True)
+
 # Reset DataFrame index
 merged_dfs.index = range(len(merged_dfs.index))
 
 print('Sorted DataFrame:')
 print(merged_dfs)
 
-# Reordering should be done here. Ravfogel code takes care of tokenization and
-# lowercasing the English side.
-
+# Tokenize and lowercase all foreign languages (NL and FR), only do only tokenization for EN
 print('--------')
 print('Loading language models')
 sp_en = spacy.load('en_core_web_sm')
 sp_fr = spacy.load('fr_core_news_sm')
-# sp_nl = spacy.load('nl_core_news_sm')
+sp_nl = spacy.load('nl_core_news_sm')
 
-# for lang in merged_dfs.columns:
-for lang in {'en', 'fr'}: # Limiting to 'fr' only for testing purposes
-    print(f"Tokenizing and lowercasing '{lang}' DataFrame column")
+df_columns = merged_dfs.columns
+    
+for lang in df_columns:
+    if lang == 'en':
+        print(f"Tokenizing '{lang}' DataFrame column")
+    else:
+        print(f"Tokenizing and lowercasing '{lang}' DataFrame column")
     merged_dfs[lang] = [tokenize_lowercase(sent, lang) for sent in
                         merged_dfs[lang]]
 
-print('Tokenized and lowercased DataFrame:')
+print("Tokenized and lowercased DataFrame (no lowercasing for 'en' column):")
 print(merged_dfs)
 
-# Set langs to only one language for testing purposes
-langs = {'fr'}
+# Make en.txt which will be used to created en.conll later on
+with open(f'/data/{getuser()}/EuroNMT/data/en.txt', 'w') as outfile:
+    outfile.write("\n".join([x for x in list(merged_dfs['en'])]))
 
-print('--------')
-for lang in langs:
-    print(f"Creating OpenNMT files for 'en-{lang}' corpus")
-    # Get 'en' column plus 1 foreign language column
-    corpus_df = merged_dfs.filter(['en', lang], axis=1)
-    # Randomize order of rows
-    corpus_df = corpus_df.sample(frac=1, random_state=1).reset_index(drop=True)
-    
-    # Split n/5k/5k
-    split_1 = -10000
-    split_2 = -5000
-
-    print(f'Total lines in corpus: {len(corpus_df)}')
-    with open(f'/home/{getuser()}/EuroNMT/data/en-{lang}/src_train.txt', 'w') as src_train, \
-         open(f'/home/{getuser()}/EuroNMT/data/en-{lang}/tgt_train.txt', 'w') as tgt_train:
-        print(f"Creating training files ({len(corpus_df['en'].iloc[:split_1])} lines)")
-        src_train.write(corpus_df['en'].iloc[:split_1].str.cat(sep='\n'))
-        tgt_train.write(corpus_df[lang].iloc[:split_1].str.cat(sep='\n'))
-
-    with open(f'/home/{getuser()}/EuroNMT/data/en-{lang}/src_val.txt', 'w') as src_val, \
-         open(f'/home/{getuser()}/EuroNMT/data/en-{lang}/tgt_val.txt', 'w') as tgt_val:
-        print(f"Creating validation files ({len(corpus_df['en'].iloc[split_1:split_2])} lines)")
-        src_val.write(corpus_df['en'].iloc[split_1:split_2].str.cat(sep='\n'))
-        tgt_val.write(corpus_df[lang].iloc[split_1:split_2].str.cat(sep='\n'))
-        
-    with open(f'/home/{getuser()}/EuroNMT/data/en-{lang}/src_test.txt', 'w') as src_test, \
-         open(f'/home/{getuser()}/EuroNMT/data/en-{lang}/tgt_test.txt', 'w') as tgt_test:
-        print(f"Creating test files ({len(corpus_df['en'].iloc[split_2:])} lines)")
-        src_test.write(corpus_df['en'].iloc[split_2:].str.cat(sep='\n'))
-        tgt_test.write(corpus_df[lang].iloc[split_2:].str.cat(sep='\n'))
-
-    print('--------')
+# Save full DataFrame to file
+merged_dfs.to_feather(f'/data/{getuser()}/EuroNMT/data/merged_dfs.ftr')
