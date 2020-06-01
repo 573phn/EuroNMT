@@ -54,7 +54,6 @@ def merge_2dfs(df1, df2):
     """
     df1 = df1.drop_duplicates(subset='en')
     df2 = df2.drop_duplicates(subset='en')
-    import pdb; pdb.set_trace()
     return pd.merge(df1, df2, on='en', validate='one_to_one')
 
 
