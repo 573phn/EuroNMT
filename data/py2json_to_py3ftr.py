@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Fix by asanakoy (https://github.com/asanakoy):
 # https://github.com/pandas-dev/pandas/issues/17540#issuecomment-511075723
 
