@@ -52,9 +52,22 @@ def merge_2dfs(df1, df2):
     Takes as input two pandas DataFrames and performs an inner merge on the
     'en' column.
     """
-    df1 = df1.drop_duplicates(subset='en')
-    df2 = df2.drop_duplicates(subset='en')
-    return pd.merge(df1, df2, on='en', validate='one_to_one')
+    # Add column with uppercase text
+    df1['EN_UPPER'] = df1['en'].astype(str).str.upper()
+    df2['EN_UPPER'] = df1['en'].astype(str).str.upper()
+    
+    # drop duplicates from 'EN_UPPER' columns
+    df1.drop_duplicates(subset='EN_UPPER', inplace=True)
+    df2.drop_duplicates(subset='EN_UPPER', inplace=True)
+    
+    new_df = pd.merge(df1, df2, on='EN_UPPER')
+    new_df.drop_duplicates(subset='EN_UPPER', inplace=True)
+    
+    new_df.rename(columns={'en_x': 'en'}, inplace=True)
+    new_df.drop(['EN_UPPER', 'en_y'], axis=1, inplace=True)
+    
+    # return merged DataFrame
+    return new_df
 
 
 def tokenize_lowercase(tl_sent, tl_lang):
@@ -105,6 +118,8 @@ print(merged_dfs)
 print('--------')
 print('Sorting DataFrames to make sure the rows are always in the same order')
 
+print(merged_dfs.columns)
+
 # Reorder DataFrame columns
 merged_dfs.sort_index(axis=1, inplace=True)
 
@@ -126,9 +141,7 @@ sp_en = spacy.load('en_core_web_sm')
 sp_fr = spacy.load('fr_core_news_sm')
 sp_nl = spacy.load('nl_core_news_sm')
 
-df_columns = merged_dfs.columns
-    
-for lang in df_columns:
+for lang in merged_dfs.columns:
     if lang == 'en':
         print(f"Tokenizing '{lang}' DataFrame column")
     else:
@@ -139,9 +152,22 @@ for lang in df_columns:
 print("Tokenized and lowercased DataFrame (no lowercasing for 'en' column):")
 print(merged_dfs)
 
+merged_dfs['EN_LOWER'] = merged_dfs['en'].astype(str).str.lower()
+# remove duplicates from all columns
+for lang in merged_dfs.columns:
+    merged_dfs.drop_duplicates(subset=lang, inplace=True)
+# remove EN_LOWER column
+merged_dfs.drop(['EN_LOWER'], axis=1, inplace=True)
+
+# Reset DataFrame index
+merged_dfs.index = range(len(merged_dfs.index))
+
 # Make en.txt which will be used to created en.conll later on
 with open(f'/data/{getuser()}/EuroNMT/data/en.txt', 'w') as outfile:
     outfile.write("\n".join([x for x in list(merged_dfs['en'])]))
+
+# Convert English sentences to lowercase
+merged_dfs['en'] = merged_dfs['en'].str.lower()
 
 # Save full DataFrame to file
 merged_dfs.to_feather(f'/data/{getuser()}/EuroNMT/data/merged_dfs.ftr')

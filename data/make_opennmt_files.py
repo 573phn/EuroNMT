@@ -6,7 +6,6 @@ from pathlib import Path
 langs = {'fr', 'nl'}
 
 merged_dfs = pd.read_feather(f'/data/{getuser()}/EuroNMT/data/merged_dfs.ftr')
-merged_dfs['en'] = merged_dfs['en'].str.lower()  # convert baseline 'en' to lowercase
 word_orders = [col for col in merged_dfs.columns if col not in langs]
 
 print('--------')
