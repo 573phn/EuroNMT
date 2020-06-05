@@ -1,17 +1,16 @@
 #!/bin/bash
 #SBATCH --job-name=EuroNMT
-#SBATCH --output=slurm/delay-job-%j.log
-#SBATCH --time=1:00
-#SBATCH --mem=1MB
+#SBATCH --output=slurm/delay-%j.log
+#SBATCH --time=5:00
+#SBATCH --mem=10MB
 #SBATCH --partition=short
 #SBATCH --dependency=singleton
 
 # Print arguments
-echo "${@}"
+echo "delay.sh" "${@}"
 
 # Set variables
 DATADIR='/data/'"${USER}"'/EuroNMT'
-RAVFOGELDIR='/data/'"${USER}"'/rnn_typology'
 WOS='en en_vso en_sov en_vos en_random en_vso60rest8 en_vso30rest14 en_vos60rest8 en_vos30rest14'
 ERROR=$(cat <<-END
   delay.sh: Incorrect usage.
@@ -42,13 +41,6 @@ elif [[ "$1" == "translate" ]] && [[ "$2" =~ ^(transformer|rnn)$ ]]; then
     # Translate RNN/Transformer
     sbatch translate.sh "${LANG}" "${2}" "${3}"
   done
-
-elif [[ "$1" == "conll" ]]; then
-  # Merge splitted conll files into one conll file
-  for file in "${DATADIR}"/data/splitfolder/split*.conll; do (cat "${file}"; echo); done | head -n -1 > "${DATADIR}"/data/en.conll
-
-  # After conll files have been merged, the resulting file needs to be zipped for use with Ravfogel code
-  zip "${RAVFOGELDIR}"/dev-penn-ud.zip "${DATADIR}"/data/en.conll
 
 else
   echo "${ERROR}"

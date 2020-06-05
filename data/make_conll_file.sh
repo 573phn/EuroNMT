@@ -1,12 +1,12 @@
 #!/bin/bash
 #SBATCH --job-name=EuroNMT
-#SBATCH --output=slurm/EuroNMT-%j.log
-#SBATCH --time=15:00
-#SBATCH --mem=4GB
-#SBATCH --partition=regular
+#SBATCH --output=slurm/make_conll_file-%j.log
+#SBATCH --time=5:00
+#SBATCH --mem=10MB
+#SBATCH --partition=short
 
 # Print arguments
-echo "${@}"
+echo "make_conll_file.sh" "${@}"
 
 # Set variables
 DATADIR='/data/'"${USER}"'/EuroNMT'
@@ -18,7 +18,7 @@ module load Python/3.7.4-GCCcore-8.3.0
 source "${DATADIR}"/env/bin/activate
 
 # Split data to multiple files for parallel processing
-split -d -l 300000 "${DATADIR}"/data/en.txt "${DATADIR}"/data/splitfolder/split --additional-suffix=.txt
+split -d -l 200000 "${DATADIR}"/data/en.txt "${DATADIR}"/data/splitfolder/split --additional-suffix=.txt
 
 # Submit a job for each created file
 for file in "${DATADIR}"/data/splitfolder/split*.txt; do
@@ -26,4 +26,4 @@ for file in "${DATADIR}"/data/splitfolder/split*.txt; do
 done
 
 # Wait until previously started jobs are done, then merge resulting conll files
-sbatch --time=5:00 --mem=10MB ../delay.sh conll
+sbatch combine_conll_files.sh
