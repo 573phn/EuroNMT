@@ -3,9 +3,9 @@ import pandas as pd
 from getpass import getuser
 from pathlib import Path
 
-langs = {'fr', 'nl'}
+langs = {'fr'}
 
-merged_dfs = pd.read_feather(f'/data/{getuser()}/EuroNMT/data/merged_dfs.ftr')
+merged_dfs = pd.read_feather(f'/data/{getuser()}/EuroNMT/data/new_merged_dfs.ftr')
 word_orders = [col for col in merged_dfs.columns if col not in langs]
 
 print('--------')
@@ -13,6 +13,7 @@ for lang in langs:
     for wo in word_orders:
         # Make directory if it does not exist yet
         Path(f'/home/{getuser()}/EuroNMT/data/{wo}-{lang}').mkdir(parents=True, exist_ok=True)
+        Path(f'/data/{getuser()}/EuroNMT/data/{wo}-{lang}').mkdir(parents=True, exist_ok=True)
         
         print(f"Creating OpenNMT files for '{wo}-{lang}' corpus")
         # Get src column column plus 1 tgt column

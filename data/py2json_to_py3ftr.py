@@ -28,4 +28,4 @@ for path in paths:
     
 
 print(merged_dfs.columns)
-merged_dfs.to_feather(f'/data/{getuser()}/EuroNMT/data/merged_dfs.ftr')
+merged_dfs.to_feather(f'/data/{getuser()}/EuroNMT/data/new_merged_dfs.ftr')
