@@ -9,7 +9,7 @@
 echo "${@}"
 
 # Set variables
-WOS='en en_vso en_sov en_vos en_random en_vso60rest8 en_vso30rest14 en_vos60rest8 en_vos30rest14'
+WOS='en en_random en_sov en_svo en_vos30rest14 en_vos60rest8 en_vos en_vso30rest14 en_vso60rest8 en_vso'
 
 for WO in ${WOS}; do
   sbatch preprocess.sh fr "${WO}"

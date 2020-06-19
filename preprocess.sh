@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=EuroNMT
 #SBATCH --output=slurm/preprocess-job-%j.log
-#SBATCH --time=1:00:00
-#SBATCH --mem=16GB
+#SBATCH --time=8:00:00
+#SBATCH --mem=32GB
 #SBATCH --partition=regular
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=g.j.s.sportel@rug.nl
