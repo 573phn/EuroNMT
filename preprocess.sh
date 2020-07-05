@@ -4,8 +4,6 @@
 #SBATCH --time=8:00:00
 #SBATCH --mem=32GB
 #SBATCH --partition=regular
-#SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=g.j.s.sportel@rug.nl
 
 # Print arguments
 echo "${@}"

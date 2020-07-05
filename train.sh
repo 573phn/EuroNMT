@@ -5,8 +5,6 @@
 #SBATCH --mem=64GB
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:v100:1
-#SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=g.j.s.sportel@rug.nl
 
 # To resume training from unfinished job, add following to model config and
 # adjust step number:

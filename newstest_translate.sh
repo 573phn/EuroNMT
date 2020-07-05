@@ -4,8 +4,6 @@
 #SBATCH --time=1-00:00:00
 #SBATCH --mem=10GB
 #SBATCH --partition=regular
-#SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=g.j.s.sportel@rug.nl
 
 # Usage: newstest_translate.sh [en|en_vso|en_sov|...]
 

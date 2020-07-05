@@ -5,8 +5,6 @@
 #SBATCH --mem=4GB
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:v100:1
-#SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=g.j.s.sportel@rug.nl
 
 # Print arguments
 echo "${@}"
