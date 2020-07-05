@@ -58,3 +58,20 @@ python3 -c "import stanza; stanza.download('en')"
 
 # Prepare baseline corpus
 sbatch "${HOMEDIR}"/data/make_baseline_corpus.sh
+
+# Make newstest dir and cd there
+mkdir -p "${DATADIR}"/newstest
+cd "${DATADIR}"/newstest
+
+# Get WMT devfile, extract needed files and remove zip file
+wget http://www.statmt.org/wmt14/dev.tgz
+wget http://www.statmt.org/wmt11/normalize-punctuation.perl
+for LANG in fr en; do
+  for YEAR in 2012 2013; do
+    tar --extract --file=dev.tgz -C dev/newstest"${YEAR}"."${LANG}"
+    # normalize ascii punctuation
+    cat dev/newstest"${YEAR}"."${LANG}" | perl normalize-punctuation.perl -l "${LANG}" > dev/newstest"${YEAR}"_normalized."${LANG}"
+  done
+done
+
+python3 "${HOMEDIR}"/data/newstest_preprocesser.py
