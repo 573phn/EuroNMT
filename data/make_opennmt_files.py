@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import random
 import pandas as pd
 from getpass import getuser
 from pathlib import Path
@@ -6,6 +7,10 @@ from pathlib import Path
 langs = {'fr'}
 
 merged_dfs = pd.read_feather(f'/data/{getuser()}/EuroNMT/data/new_merged_dfs.ftr')
+
+random.seed(5)
+merged_dfs['en_shuffle'] = [' '.join(random.sample(i, len(i))) for i in merged_dfs['en'].str.split().tolist()]
+
 word_orders = [col for col in merged_dfs.columns if col not in langs]
 
 print('--------')
