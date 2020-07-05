@@ -1,4 +1,7 @@
 slurm/
 data/en*/
+data/nl*/
+data/tools/__pycache__/
 data/spacy_conll_stanza/
 .idea/
+slurm-*.txt
