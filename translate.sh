@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=EuroNMT
 #SBATCH --output=slurm/translate-job-%j.log
-#SBATCH --time=00:05:00
+#SBATCH --time=00:15:00
 #SBATCH --mem=4GB
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:v100:1
