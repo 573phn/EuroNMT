@@ -45,7 +45,7 @@ pip install --upgrade pip==20.0.2
 pip install --upgrade setuptools==46.1.3
 
 # Install required packages (inside virtual environment)
-pip install tqdm==4.30.0 spacy==2.2.3 pandas==1.0.3 spacy_conll==1.2.0 spacy-stanza==0.2.1 OpenNMT-py==1.1.1 nltk==3.5 tables==3.6.1 pyarrow==0.17.1
+pip install tqdm==4.30.0 spacy==2.2.3 pandas==1.0.3 spacy_conll==1.2.0 spacy-stanza==0.2.1 OpenNMT-py==1.1.1 nltk==3.5 tables==3.6.1 pyarrow==0.17.1 torch==1.4.0
 
 # Download pretrained spacy models
 python3 -m spacy download en_core_web_sm
@@ -60,18 +60,18 @@ python3 -c "import stanza; stanza.download('en')"
 sbatch "${HOMEDIR}"/data/make_baseline_corpus.sh
 
 # Make newstest dir and cd there
-mkdir -p "${DATADIR}"/newstest
-cd "${DATADIR}"/newstest
+#mkdir -p "${DATADIR}"/newstest
+#cd "${DATADIR}"/newstest
 
 # Get WMT devfile, extract needed files and remove zip file
-wget http://www.statmt.org/wmt14/dev.tgz
-wget http://www.statmt.org/wmt11/normalize-punctuation.perl
-for LANG in fr en; do
-  for YEAR in 2012 2013; do
-    tar --extract --file=dev.tgz -C dev/newstest"${YEAR}"."${LANG}"
-    # normalize ascii punctuation
-    cat dev/newstest"${YEAR}"."${LANG}" | perl normalize-punctuation.perl -l "${LANG}" > dev/newstest"${YEAR}"_normalized."${LANG}"
-  done
-done
+#wget http://www.statmt.org/wmt14/dev.tgz
+#wget http://www.statmt.org/wmt11/normalize-punctuation.perl
+#for LANG in fr en; do
+#  for YEAR in 2012 2013; do
+#    tar --extract --file=dev.tgz -C dev/newstest"${YEAR}"."${LANG}"
+#    # normalize ascii punctuation
+#    cat dev/newstest"${YEAR}"."${LANG}" | perl normalize-punctuation.perl -l "${LANG}" > dev/newstest"${YEAR}"_normalized."${LANG}"
+#  done
+#done
 
-python3 "${HOMEDIR}"/data/newstest_preprocesser.py
+#python3 "${HOMEDIR}"/data/newstest_preprocesser.py
