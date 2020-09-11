@@ -11,7 +11,8 @@ echo "delay.sh" "${@}"
 
 # Set variables
 DATADIR='/data/'"${USER}"'/EuroNMT'
-WOS='en en_random en_sov en_svo en_vos30rest14 en_vos60rest8 en_vos en_vso30rest14 en_vso60rest8 en_vso en_randomna-aseed5 en_randomna-dseed5 en_randomnoneseed10'
+WOS='en en_random en_sov en_vos en_vos30rest14 en_vos60rest8 en_vso en_vso30rest14 en_vso60rest8 en_svo en_randomna-aseed5 en_randomna-dseed5 en_randomnoneseed10 en_shuffle'
+
 ERROR=$(cat <<-END
   delay.sh: Incorrect usage.
   Correct usage options are:
