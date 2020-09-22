@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=EuroNMT
 #SBATCH --output=slurm/EuroNMT-%j.log
-#SBATCH --time=1-12:00:00
+#SBATCH --time=3-00:00:00
 #SBATCH --mem=2GB
 #SBATCH --partition=regular
 

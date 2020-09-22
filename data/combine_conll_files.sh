@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=EuroNMT
 #SBATCH --output=slurm/combine_conll_files-%j.log
-#SBATCH --time=5:00
-#SBATCH --mem=10MB
+#SBATCH --time=15:00
+#SBATCH --mem=100MB
 #SBATCH --partition=short
 #SBATCH --dependency=singleton
 
