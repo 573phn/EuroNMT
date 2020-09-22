@@ -25,6 +25,9 @@ module load Python/3.7.4-GCCcore-8.3.0
 # Activate virtual environment
 source "${DATADIR}"/env/bin/activate
 
+# Create dir if it doesn't already exist
+mkdir -p "${DATADIR}"/data/"${2}"-"${1}"
+
 # Preprocess data
 if [[ "$1" =~ ^(fr|nl)$ ]]; then
   if [[ "$BPE" = true ]]; then
