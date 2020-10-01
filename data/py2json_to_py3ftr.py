@@ -20,8 +20,8 @@ for path in paths:
         merged_dfs[Path(path).stem.split('.')[0]] = pd.read_json(json_string)
     else:
         print((f'Cannot add {Path(path).stem.split(".")[0]} because it has '
-               f'{len(Path(path).stem.split(".")[0])} rows while merged_dfs has '
-               f'{len(len(merged_dfs.index))}. Number of rows needs to be the '
+               f'{len(reordered_df.index)} rows while merged_dfs has '
+               f'{len(merged_dfs.index)}. Number of rows needs to be the '
                f'same.'))
 
     # merged_dfs = merged_dfs.merge(reordered_df, left_index=True, right_index=True)
