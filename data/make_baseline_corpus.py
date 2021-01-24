@@ -54,7 +54,7 @@ def merge_2dfs(df1, df2):
     """
     # Add column with uppercase text
     df1['EN_UPPER'] = df1['en'].astype(str).str.upper()
-    df2['EN_UPPER'] = df1['en'].astype(str).str.upper()
+    df2['EN_UPPER'] = df2['en'].astype(str).str.upper()
     
     # drop duplicates from 'EN_UPPER' columns
     df1.drop_duplicates(subset='EN_UPPER', inplace=True)
